@@ -1,18 +1,14 @@
 {
   "name": "reporte-incidentes",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sistema de reportes con respuesta automática para HelpDesk",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
     "express": "^5.2.1",
     "nodemailer": "^8.0.1"
   }
