@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reporte de Incidentes</title>
   <style>
-    /* Estilos generales */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -15,8 +14,6 @@
       justify-content: center;
       align-items: center;
     }
-
-    /* Contenedor del formulario */
     .form-container {
       background: #fff;
       padding: 30px 40px;
@@ -26,12 +23,7 @@
       max-width: 400px;
       text-align: center;
     }
-
-    h1 {
-      margin-bottom: 20px;
-      color: #333;
-    }
-
+    h1 { margin-bottom: 20px; color: #333; }
     input, textarea {
       width: 100%;
       padding: 12px;
@@ -41,11 +33,6 @@
       font-size: 14px;
       box-sizing: border-box;
     }
-
-    textarea {
-      resize: vertical;
-    }
-
     button {
       width: 100%;
       padding: 12px;
@@ -58,16 +45,8 @@
       font-size: 16px;
       transition: 0.3s;
     }
-
-    button:hover {
-      background-color: #5a63e0;
-    }
-
-    #respuesta {
-      margin-top: 15px;
-      font-weight: bold;
-      color: green;
-    }
+    button:hover { background-color: #5a63e0; }
+    #respuesta { margin-top: 15px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -79,7 +58,7 @@
       <input type="email" name="email" placeholder="Tu correo" required>
       <input type="text" name="asunto" placeholder="Asunto" required>
       <textarea name="mensaje" placeholder="Describe el incidente" rows="5" required></textarea>
-      <button type="submit">Enviar</button>
+      <button type="submit" id="btnEnviar">Enviar Reporte</button>
     </form>
     <p id="respuesta"></p>
   </div>
@@ -87,9 +66,15 @@
   <script>
     const form = document.getElementById("formulario");
     const respuesta = document.getElementById("respuesta");
+    const btn = document.getElementById("btnEnviar");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      
+      // Feedback visual para el usuario
+      btn.disabled = true;
+      respuesta.textContent = "Enviando reporte... ⏳";
+      respuesta.style.color = "blue";
 
       const datos = {
         nombre: form.nombre.value,
@@ -99,24 +84,30 @@
       };
 
       try {
-        const res = await fetch("/enviar-reporte", {
+        // Conexión directa a tu servidor en Render
+        const res = await fetch("https://sistema-reportes-0mjw.onrender.com/enviar-reporte", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(datos)
         });
 
         const data = await res.json();
-        respuesta.textContent = data.mensaje || data.error;
-        respuesta.style.color = data.mensaje ? "green" : "red";
-
-        if(data.mensaje) form.reset(); // Limpia el formulario si se envió correctamente
+        
+        if (res.ok) {
+          respuesta.textContent = "✅ " + data.mensaje;
+          respuesta.style.color = "green";
+          form.reset();
+        } else {
+          respuesta.textContent = "❌ Error: " + (data.error || "No se pudo enviar");
+          respuesta.style.color = "red";
+        }
       } catch (err) {
-        respuesta.textContent = "Error al enviar ❌";
+        respuesta.textContent = "❌ Error de conexión con el servidor";
         respuesta.style.color = "red";
-        console.error(err);
+      } finally {
+        btn.disabled = false;
       }
     });
   </script>
-
 </body>
 </html>
